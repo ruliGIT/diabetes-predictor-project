@@ -5,6 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import GridSearchCV 
+
 
 # Data Collection and Analysis
 # PIMA Diabetes Dataset
@@ -73,6 +75,30 @@ X_test_prediction = classifier.predict(X_test)
 test_data_accuracy = accuracy_score(X_test_prediction, Y_test)
 
 print('Accuracy score of the test data: ', test_data_accuracy)
+
+# Train the Support Vector Classifier with Hyper-parameter Tuning - GridsearchCV
+
+# defining parameter range 
+param_grid = {'C': [0.1, 1, 10, 100, 1000],  
+              'gamma': [1, 0.1, 0.01, 0.001, 0.0001], 
+              'kernel': ['linear']}  
+  
+grid = GridSearchCV(svm.SVC(kernel='linear'), param_grid, refit = True, verbose = 3) 
+  
+# fitting the model for grid search 
+grid.fit(X_train, Y_train)
+
+# Get the best parameters found by GridSearchCV
+best_params = grid.best_params_
+
+# Retrain the model using the best parameters
+best_classifier = svm.SVC(**best_params)
+best_classifier.fit(X_train, Y_train)
+
+# Evaluate the accuracy of the model using the best parameters
+best_predictions = best_classifier.predict(X_test)
+best_accuracy = accuracy_score(best_predictions, Y_test)
+print('Accuracy score using best parameters: ', best_accuracy)
 
 # Making a Prediction System
 
